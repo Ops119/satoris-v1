@@ -10,21 +10,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one reading column with a wide protocol trace in the hero; sealing-wax red is the only accent. */
+/* Layout: one reading column; the header and hero sit on a purple card, and purple is the only accent. */
 :root {
   --paper: #f2f5f4;
   --panel: #e6ecea;
   --ink: #0f1b1f;
   --muted: #4c5d61;
   --rule: #c9d3d1;
-  --wax: #a8262f;
-  --wax-soft: #f3dcdd;
+  --wax: #6236d1;
+  --wax-soft: #ebe4fc;
+  --card: #4b25b3;
+  --card-fg: #f6f2ff;
+  --card-muted: #d5c9fa;
   --ok: #1f6b4a;
   --next: #8a5a12;
   --trace-bg: #0f1b1f;
   --trace-fg: #d7e2df;
   --trace-dim: #7f9599;
-  --trace-key: #f08a90;
+  --trace-key: #c3adff;
   --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -32,15 +35,17 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #0c1316; --panel: #152025; --ink: #e3ebe9; --muted: #9db0b3; --rule: #263439;
-    --wax: #e45a63; --wax-soft: #3a1a1e; --ok: #5cc395; --next: #e0aa55;
-    --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #f08a90;
+    --wax: #a98bff; --wax-soft: #2a2145; --ok: #5cc395; --next: #e0aa55;
+    --card: #33197f; --card-fg: #f6f2ff; --card-muted: #cbbdf7;
+    --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #c3adff;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0c1316; --panel: #152025; --ink: #e3ebe9; --muted: #9db0b3; --rule: #263439;
-  --wax: #e45a63; --wax-soft: #3a1a1e; --ok: #5cc395; --next: #e0aa55;
-  --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #f08a90;
+  --wax: #a98bff; --wax-soft: #2a2145; --ok: #5cc395; --next: #e0aa55;
+  --card: #33197f; --card-fg: #f6f2ff; --card-muted: #cbbdf7;
+  --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #c3adff;
   color-scheme: dark;
 }
 
@@ -62,6 +67,7 @@ a:focus-visible, .btn:focus-visible { outline: 2px solid var(--wax); outline-off
   padding-right: max(20px, env(safe-area-inset-right, 0px));
 }
 section { padding-block: 72px; border-top: 1px solid var(--rule); }
+.masthead + section { margin-top: 56px; }
 .eyebrow {
   font: 500 12px/1 var(--f-mono);
   letter-spacing: 0.12em;
@@ -78,7 +84,28 @@ p { margin: 0; max-width: 65ch; }
 .stack { display: grid; gap: 16px; }
 .head { display: grid; gap: 14px; margin-bottom: 40px; }
 
-/* Header */
+/* Header + hero card */
+.masthead { padding-top: 16px; }
+.card {
+  background: var(--card);
+  color: var(--card-fg);
+  border-radius: 18px;
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+.card .mark { color: var(--card-fg); }
+.card .seal { background: var(--card-fg); color: var(--card); }
+.card .nav a { color: var(--card-muted); }
+.card .nav a:hover { color: var(--card-fg); }
+.card .eyebrow { color: var(--card-muted); }
+.card .lede { color: var(--card-muted); }
+.card .status-line { color: var(--card-muted); }
+.card .status-line b { color: #7ee2b0; }
+.card .btn { border-color: var(--card-fg); color: var(--card-fg); }
+.card .btn.primary { background: var(--card-fg); color: var(--card); }
+.card .btn:hover { border-color: var(--card-muted); }
+.card a:focus-visible, .card .btn:focus-visible { outline-color: var(--card-fg); }
+.card .trace { box-shadow: 0 18px 40px -20px #00000080; }
+
 .top { padding-block: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .mark { display: flex; align-items: center; gap: 10px; font: 700 20px/1 var(--f-display); color: var(--ink); text-decoration: none; }
 .seal { width: 26px; height: 26px; border-radius: 50%; background: var(--wax); display: grid; place-items: center; color: var(--paper); font: 700 13px/1 var(--f-display); }
@@ -87,7 +114,7 @@ p { margin: 0; max-width: 65ch; }
 .nav a:hover { color: var(--ink); }
 
 /* Hero */
-.hero { padding-block: 40px 80px; display: grid; gap: 48px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; }
+.hero { padding-block: 32px 56px; display: grid; gap: 48px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; }
 .hero-copy { display: grid; gap: 24px; min-width: 0; }
 .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
 .btn {
@@ -183,7 +210,8 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--rule); color: var
 </head>
 <body>
 
-<div class="wrap">
+<div class="wrap masthead">
+ <div class="card">
   <header class="top">
     <a class="mark" href="#top"><span class="seal" aria-hidden="true">S</span>Satoris</a>
     <nav class="nav" aria-label="Sections">
@@ -234,6 +262,7 @@ x-satoris-receipt-id: 7f3c…
 {"usage":{…},"envelope":{"ct":"q8Zt…"}}<span class="cursor">▍</span></pre>
     </figure>
   </div>
+ </div>
 </div>
 
 <section>
