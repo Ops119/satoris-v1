@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Satoris Progress</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="What Satoris runs today on Solana devnet, and the phased roadmap to an audited mainnet beta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="masthead card">
+ <div class="wrap">
+  <header class="top">
+    <a class="mark" href="index.html"><span class="seal" aria-hidden="true">S</span>Satoris</a>
+    <nav class="nav" aria-label="Pages">
+      <a href="index.html">Home</a>
+      <a href="technology.html">Technology</a>
+      <a href="progress.html" aria-current="page">Progress</a>
+      <a href="investors.html">Investors</a>
+      <a href="https://github.com/Ops119/satoris-v1">GitHub</a>
+    </nav>
+  </header>
+  <div class="intro">
+    <p class="eyebrow">Progress</p>
+    <h1>Built in the open, shipped in phases.</h1>
+    <p class="lede">A working devnet MVP today. Each next phase has a test it must pass before the next one starts.</p>
+  </div>
+ </div>
+</div>
+<section id="built" style="border-top: 0">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">What's built</p>
+      <h2>A working MVP, stated plainly.</h2>
+    </div>
+    <div class="facts" style="margin-bottom: 36px">
+      <div class="fact"><strong>5</strong><span>TypeScript packages</span></div>
+      <div class="fact"><strong>1</strong><span>Anchor program, 9 instructions</span></div>
+      <div class="fact"><strong>23</strong><span>tests, including full paid flow</span></div>
+      <div class="fact"><strong>0</strong><span>plaintext bytes the gateway sees on the sealed path</span></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>OpenAI-compatible gateway</td><td><span class="pill built">built</span></td><td>Chat completions, model catalog, attested routing, zero-payload logging</td></tr>
+          <tr><td>x402 payments on Solana</td><td><span class="pill built">built</span></td><td>Official x402 SDK, <code>exact</code> and <code>upto</code> schemes, verified against the public devnet facilitator</td></tr>
+          <tr><td>Sealed envelopes</td><td><span class="pill built">built</span></td><td>Client-side encryption to the enclave key, tamper-evident billing metadata</td></tr>
+          <tr><td>Client SDK</td><td><span class="pill built">built</span></td><td>Auto-pays 402s, per-request cap and session budget, verifies nodes itself</td></tr>
+          <tr><td>On-chain program</td><td><span class="pill built">built</span></td><td>Node registry and staking, attestation records, receipt roots, slashing</td></tr>
+          <tr><td>Hardware quote verification</td><td><span class="pill next">next</span></td><td>Intel TDX via dcap-qvl and NVIDIA NRAS; today only a dev mode verifies</td></tr>
+          <tr><td>Streaming, web app, provider onboarding</td><td><span class="pill next">next</span></td><td>Scheduled in the roadmap below</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Roadmap</p>
+      <h2>Lean phases, each with a test it must pass.</h2>
+      <p class="lede">About 11 to 14 weeks of build with a small team, plus audit time, to a mainnet beta.</p>
+    </div>
+    <div class="road">
+      <div class="phase"><h3>Phase 0 · Harden</h3><span class="meta">~1 week</span><p>Request limits, persistent receipts, real devnet payments end to end, program tests in CI.</p></div>
+      <div class="phase crit"><h3>Phase 1 · Real attestation</h3><span class="meta">~2–3 weeks · critical path</span><p>Intel TDX and NVIDIA H100 quotes verified in the gateway and in the browser, from a reproducible, measured node image.</p></div>
+      <div class="phase"><h3>Phase 2 · On-chain trust loop</h3><span class="meta">~2 weeks</span><p>Approved images on-chain, nodes routed from the on-chain registry, receipt inclusion proofs any user can check.</p></div>
+      <div class="phase"><h3>Phase 3 · Payments polish</h3><span class="meta">~1–2 weeks</span><p>Per-token settlement by default, sealed streaming, and an MCP tool so agents can call Satoris directly.</p></div>
+      <div class="phase"><h3>Phase 4 · Providers and app</h3><span class="meta">~3–4 weeks</span><p>Self-serve GPU provider onboarding with USDC stake, weekly payouts, and a web app that verifies enclaves in the browser.</p></div>
+      <div class="phase"><h3>Phase 5 · Mainnet beta</h3><span class="meta">~2 weeks plus audit</span><p>Program audit, launch caps, admin pause, multisig authorities, and AMD SEV-SNP support.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="callout">
+      <p class="eyebrow">Open source</p>
+      <h2>Read the code and the plan.</h2>
+      <p>Everything on this page links back to the repository: the implementation, the tests, the architecture and the phased roadmap.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/Ops119/satoris-v1">Repository</a>
+        <a class="btn" href="https://github.com/Ops119/satoris-v1/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+        <a class="btn" href="https://github.com/Ops119/satoris-v1/blob/main/docs/ROADMAP.md">Roadmap</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Keep reading</p>
+    </div>
+    <div class="links">
+      <a class="link-card" href="technology.html">
+        <h3>Technology</h3>
+        <p>How a prompt stays sealed from the device to the GPU enclave, and who can see what.</p>
+        <span class="go">Open technology →</span>
+      </a>
+      <a class="link-card" href="investors.html">
+        <h3>Investors</h3>
+        <p>Business model, how Satoris compares, and what funding unlocks.</p>
+        <span class="go">Open investors →</span>
+      </a>
+      <a class="link-card" href="index.html">
+        <h3>Home</h3>
+        <p>The short version: what Satoris is and why it matters now.</p>
+        <span class="go">Open home →</span>
+      </a>
+    </div>
+  </div>
+</section>
+<div class="wrap">
+  <footer>
+    <span>Satoris · private AI inference on Solana</span>
+    <span>Devnet MVP. Do not send sensitive data until hardware attestation ships.</span>
+  </footer>
+</div>
+
+</body>
+</html>

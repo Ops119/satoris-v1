@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Satoris Technology</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="How Satoris seals prompts to attested GPU enclaves, bills over x402 and anchors receipts on Solana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="masthead card">
+ <div class="wrap">
+  <header class="top">
+    <a class="mark" href="index.html"><span class="seal" aria-hidden="true">S</span>Satoris</a>
+    <nav class="nav" aria-label="Pages">
+      <a href="index.html">Home</a>
+      <a href="technology.html" aria-current="page">Technology</a>
+      <a href="progress.html">Progress</a>
+      <a href="investors.html">Investors</a>
+      <a href="https://github.com/Ops119/satoris-v1">GitHub</a>
+    </nav>
+  </header>
+  <div class="intro">
+    <p class="eyebrow">Technology</p>
+    <h1>Privacy you can check, not a policy you have to trust.</h1>
+    <p class="lede">Every request is verified, sealed, paid for and recorded. The client does the checking itself, so the gateway in the middle never has to be trusted with data.</p>
+  </div>
+ </div>
+</div>
+<section id="how" style="border-top: 0">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">How it works</p>
+      <h2>Four steps on every request.</h2>
+      <p class="lede">Each step is already implemented in the repository and covered by tests.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1 · Verify</span>
+        <h3>Check the enclave</h3>
+        <p>The client sends its own nonce and checks the hardware quote: approved image, no debug mode, and the encryption key bound inside the quote.</p>
+      </div>
+      <div class="step">
+        <span class="n">2 · Seal</span>
+        <h3>Encrypt to that key</h3>
+        <p>The prompt is encrypted on the device (<code>X25519 + AES-256-GCM</code>). Only model and token cap stay readable for billing, and altering them breaks decryption.</p>
+      </div>
+      <div class="step">
+        <span class="n">3 · Pay</span>
+        <h3>Settle in USDC</h3>
+        <p>HTTP 402 quotes the maximum; with the <code>upto</code> scheme only the tokens actually used are settled. Failed requests are never charged.</p>
+      </div>
+      <div class="step">
+        <span class="n">4 · Prove</span>
+        <h3>Anchor a receipt</h3>
+        <p>Each job gets a receipt of hashes. Batches are rolled into a Merkle root stored by the Satoris program on Solana.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Who sees what</p>
+      <h2>The gateway is a router, not a custodian.</h2>
+      <p class="lede">On the sealed path, only the client and the measured enclave image ever handle plaintext.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Party</th><th>Sees the prompt?</th><th>Trusted for</th></tr></thead>
+        <tbody>
+          <tr><td>Client</td><td><span class="pill yes">yes</span></td><td>Itself</td></tr>
+          <tr><td>Gateway</td><td><span class="pill no">no, ciphertext only</span></td><td>Routing, metering, uptime</td></tr>
+          <tr><td>Payment facilitator</td><td><span class="pill no">no</span></td><td>Settling the USDC transfer</td></tr>
+          <tr><td>GPU operator</td><td><span class="pill no">no</span></td><td>Supplying hardware, backed by stake</td></tr>
+          <tr><td>Enclave image</td><td><span class="pill yes">yes, inside the TEE</span></td><td>Pinned by its published measurement</td></tr>
+          <tr><td>Solana</td><td><span class="pill no">no, hashes only</span></td><td>Staking, slashing, receipt ordering</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Under the hood</p>
+      <h2>The building blocks.</h2>
+      <p class="lede">Standard, reviewable primitives. Nothing proprietary sits in the trust path.</p>
+    </div>
+    <dl class="spec">
+      <dt>Prompt encryption</dt>
+      <dd>X25519 key exchange, HKDF-SHA256 and AES-256-GCM through WebCrypto, so the same code runs in browsers and Node. Model and token cap are bound as authenticated data. <code>X25519-HKDF-SHA256-A256GCM</code></dd>
+      <dt>Enclave checks</dt>
+      <dd>Client-chosen nonce, quote freshness, approved image measurement, TCB status, debug mode off, GPU evidence, and the encryption key bound into the quote's report data.</dd>
+      <dt>Hardware</dt>
+      <dd>Intel TDX and AMD SEV-SNP guests through the Linux configfs-tsm interface, with NVIDIA Hopper and Blackwell confidential computing for the GPU.</dd>
+      <dt>Payments</dt>
+      <dd>x402 v2 with the official SDK on Solana. <code>exact</code> charges the quoted maximum; <code>upto</code> settles only the tokens used. Requests that fail are never charged.</dd>
+      <dt>API</dt>
+      <dd>OpenAI-compatible <code>/v1/chat/completions</code> and <code>/v1/models</code>, a sealed endpoint, node attestation relay and receipt lookup.</dd>
+      <dt>On-chain program</dt>
+      <dd>Anchor program with nine instructions: node registry and USDC staking, attestation records, receipt Merkle roots, slashing and unbonding.</dd>
+      <dt>Logging</dt>
+      <dd>Method, path and status only. No bodies, headers, IP addresses or wallets.</dd>
+    </dl>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Keep reading</p>
+    </div>
+    <div class="links">
+      <a class="link-card" href="progress.html">
+        <h3>Progress</h3>
+        <p>What runs today on devnet, and the phased plan to an audited mainnet beta.</p>
+        <span class="go">Open progress →</span>
+      </a>
+      <a class="link-card" href="investors.html">
+        <h3>Investors</h3>
+        <p>Business model, how Satoris compares, and what funding unlocks.</p>
+        <span class="go">Open investors →</span>
+      </a>
+      <a class="link-card" href="index.html">
+        <h3>Home</h3>
+        <p>The short version: what Satoris is and why it matters now.</p>
+        <span class="go">Open home →</span>
+      </a>
+    </div>
+  </div>
+</section>
+<div class="wrap">
+  <footer>
+    <span>Satoris · private AI inference on Solana</span>
+    <span>Devnet MVP. Do not send sensitive data until hardware attestation ships.</span>
+  </footer>
+</div>
+
+</body>
+</html>
