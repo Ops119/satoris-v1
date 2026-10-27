@@ -1,0 +1,26 @@
+{
+  "name": "@satoris/node-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Runs inside a TEE GPU node: serves attestation, opens sealed prompts, forwards to a local inference server",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "satoris-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx --conditions=satoris-source src/main.ts",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@satoris/attestation": "workspace:*",
+    "@satoris/sealed": "workspace:*",
+    "hono": "^4.13.0"
+  }
+}

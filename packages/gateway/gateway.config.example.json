@@ -1,0 +1,29 @@
+{
+  "port": 8080,
+  "facilitatorUrl": "https://x402.org/facilitator",
+  "payment": {
+    "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+    "payTo": "${SATORIS_TREASURY}",
+    "scheme": "exact",
+    "maxTimeoutSeconds": 120
+  },
+  "pricing": {
+    "defaultMaxTokens": 512,
+    "minChargeAtomic": 10,
+    "models": [
+      { "id": "llama-3.3-70b-instruct", "inputPerMTok": 600000, "outputPerMTok": 800000, "maxOutputTokens": 8192, "contextWindow": 131072 },
+      { "id": "qwen3-32b", "inputPerMTok": 300000, "outputPerMTok": 450000, "maxOutputTokens": 8192, "contextWindow": 32768 },
+      { "id": "echo-1", "inputPerMTok": 1000, "outputPerMTok": 1000, "maxOutputTokens": 1024, "contextWindow": 8192 }
+    ]
+  },
+  "nodes": [
+    { "id": "dev-node-1", "url": "http://localhost:8787", "models": ["echo-1"], "authToken": "${NODE_AUTH_TOKEN}", "region": "local" }
+  ],
+  "policy": {
+    "allowedPlatforms": ["dev-insecure"],
+    "allowedMeasurements": ["000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"],
+    "requireGpuAttestation": false
+  },
+  "minTier": "tee-cpu",
+  "attestationIntervalMs": 300000
+}
