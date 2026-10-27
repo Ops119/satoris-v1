@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Satoris</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Private AI inference on Solana: prompts sealed to attested TEE GPUs, paid per request in USDC over x402, with receipts anchored on-chain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with a wide protocol trace in the hero; sealing-wax red is the only accent. */
+:root {
+  --paper: #f2f5f4;
+  --panel: #e6ecea;
+  --ink: #0f1b1f;
+  --muted: #4c5d61;
+  --rule: #c9d3d1;
+  --wax: #a8262f;
+  --wax-soft: #f3dcdd;
+  --ok: #1f6b4a;
+  --next: #8a5a12;
+  --trace-bg: #0f1b1f;
+  --trace-fg: #d7e2df;
+  --trace-dim: #7f9599;
+  --trace-key: #f08a90;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c1316; --panel: #152025; --ink: #e3ebe9; --muted: #9db0b3; --rule: #263439;
+    --wax: #e45a63; --wax-soft: #3a1a1e; --ok: #5cc395; --next: #e0aa55;
+    --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #f08a90;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0c1316; --panel: #152025; --ink: #e3ebe9; --muted: #9db0b3; --rule: #263439;
+  --wax: #e45a63; --wax-soft: #3a1a1e; --ok: #5cc395; --next: #e0aa55;
+  --trace-bg: #071012; --trace-fg: #d7e2df; --trace-dim: #6f8589; --trace-key: #f08a90;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 17px/1.6 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--wax); text-underline-offset: 3px; }
+a:focus-visible, .btn:focus-visible { outline: 2px solid var(--wax); outline-offset: 3px; }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+section { padding-block: 72px; border-top: 1px solid var(--rule); }
+.eyebrow {
+  font: 500 12px/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wax);
+  margin: 0 0 16px;
+}
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(40px, 6.4vw, 74px); line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.1; font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 20px; line-height: 1.25; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+.lede { font-size: 20px; color: var(--muted); max-width: 56ch; }
+.stack { display: grid; gap: 16px; }
+.head { display: grid; gap: 14px; margin-bottom: 40px; }
+
+/* Header */
+.top { padding-block: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.mark { display: flex; align-items: center; gap: 10px; font: 700 20px/1 var(--f-display); color: var(--ink); text-decoration: none; }
+.seal { width: 26px; height: 26px; border-radius: 50%; background: var(--wax); display: grid; place-items: center; color: var(--paper); font: 700 13px/1 var(--f-display); }
+.nav { display: flex; gap: 20px; flex-wrap: wrap; font-size: 15px; }
+.nav a { color: var(--muted); text-decoration: none; }
+.nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { padding-block: 40px 80px; display: grid; gap: 48px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; }
+.hero-copy { display: grid; gap: 24px; min-width: 0; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 18px; border-radius: 6px;
+  font: 500 15px/1 var(--f-body); text-decoration: none;
+  border: 1px solid var(--ink); color: var(--ink);
+}
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn:hover { border-color: var(--wax); }
+.status-line { font: 400 13px/1.5 var(--f-mono); color: var(--muted); }
+.status-line b { color: var(--ok); font-weight: 500; }
+
+.trace {
+  min-width: 0;
+  background: var(--trace-bg);
+  color: var(--trace-fg);
+  border-radius: 10px;
+  font: 400 12.5px/1.65 var(--f-mono);
+  overflow: hidden;
+}
+.trace-bar { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #ffffff14; color: var(--trace-dim); font-size: 11.5px; flex-wrap: wrap; }
+.trace pre { margin: 0; padding: 16px; overflow-x: auto; white-space: pre; }
+.trace .d { color: var(--trace-dim); }
+.trace .k { color: var(--trace-key); }
+.trace .s { color: #9fd8bf; }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.step { padding: 24px; display: grid; gap: 10px; align-content: start; border-right: 1px solid var(--rule); min-width: 0; }
+.step:last-child { border-right: 0; }
+.step .n { font: 500 13px/1 var(--f-mono); color: var(--wax); }
+.step p { font-size: 15px; color: var(--muted); }
+.step code { font: 400 13px var(--f-mono); color: var(--ink); }
+
+/* Tables */
+.table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 12px/1.2 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-weight: 600; }
+.pill { display: inline-block; font: 500 12px/1 var(--f-mono); padding: 5px 8px; border-radius: 99px; white-space: nowrap; }
+.pill.no { background: var(--wax-soft); color: var(--wax); }
+.pill.yes { background: var(--panel); color: var(--ink); }
+.pill.built { color: var(--ok); border: 1px solid currentColor; }
+.pill.next { color: var(--next); border: 1px solid currentColor; }
+
+/* Two-column prose blocks */
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.cols > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.cols p { font-size: 16px; color: var(--muted); }
+
+/* Roadmap */
+.road { display: grid; gap: 0; border-left: 2px solid var(--rule); margin-left: 6px; }
+.phase { position: relative; padding: 0 0 28px 28px; display: grid; gap: 6px; }
+.phase:last-child { padding-bottom: 0; }
+.phase::before { content: ""; position: absolute; left: -8px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); border: 2px solid var(--rule); }
+.phase.crit::before { background: var(--wax); border-color: var(--wax); }
+.phase .meta { font: 400 13px var(--f-mono); color: var(--muted); }
+.phase p { font-size: 15.5px; color: var(--muted); }
+
+/* Numbers that are real */
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.fact { display: grid; gap: 4px; }
+.fact strong { font: 700 34px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 14px; color: var(--muted); }
+
+.callout { background: var(--panel); border-radius: 10px; padding: 28px; display: grid; gap: 12px; }
+footer { padding-block: 40px 56px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .step:nth-child(2) { border-right: 0; }
+  .step:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  section { padding-block: 56px; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .step { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .step:last-child { border-bottom: 0; }
+  .nav { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cursor { animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="#top"><span class="seal" aria-hidden="true">S</span>Satoris</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#trust">Who sees what</a>
+      <a href="#built">What's built</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="https://github.com/Ops119/satoris-v1">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="hero-copy">
+      <p class="eyebrow">Private inference · Solana · x402</p>
+      <h1>AI that can't read your prompts, paid per request.</h1>
+      <p class="lede">Satoris seals each prompt to a GPU enclave the client has verified itself, charges for it in USDC over HTTP 402, and anchors a receipt on Solana. No accounts, no API keys, and no operator who can see the data.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/Ops119/satoris-v1">View the code</a>
+        <a class="btn" href="https://github.com/Ops119/satoris-v1/blob/main/docs/ARCHITECTURE.md">Read the architecture</a>
+      </div>
+      <p class="status-line"><b>●</b> Devnet MVP · open source · 23 passing tests</p>
+    </div>
+
+    <figure class="trace" aria-label="Captured HTTP exchange with the Satoris gateway">
+      <div class="trace-bar"><span>example exchange · solana devnet</span><span>402 body captured from a real run</span></div>
+<pre><span class="d"># 1. send a sealed request, no account, no key</span>
+<span class="k">POST</span> /v1/sealed/chat/completions
+{"meta":{"model":"echo-1","max_tokens":20},"envelope":{…}}
+
+<span class="d"># 2. the gateway quotes the request's upper bound</span>
+<span class="k">HTTP/1.1 402</span> Payment Required
+PAYMENT-REQUIRED: {
+  "scheme": <span class="s">"exact"</span>,
+  "network": <span class="s">"solana:EtWTRABZ…"</span>,
+  "amount": <span class="s">"10"</span>,          <span class="d">// 0.000010 USDC</span>
+  "asset": <span class="s">"4zMMC9sr…"</span>,     <span class="d">// devnet USDC</span>
+  "payTo": <span class="s">"9xQeWvG8…"</span>
+}
+
+<span class="d"># 3. the client signs a USDC transfer and retries</span>
+<span class="k">POST</span> /v1/sealed/chat/completions
+PAYMENT-SIGNATURE: eyJ4NDAy…
+
+<span class="d"># 4. sealed reply, settled, receipt recorded</span>
+<span class="k">HTTP/1.1 200</span>
+PAYMENT-RESPONSE: eyJzdWNjZXNz…
+x-satoris-receipt-id: 7f3c…
+{"usage":{…},"envelope":{"ct":"q8Zt…"}}<span class="cursor">▍</span></pre>
+    </figure>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">The problem</p>
+      <h2>Every AI API today runs on trust in the operator.</h2>
+    </div>
+    <div class="cols">
+      <div>
+        <h3>Prompts are readable</h3>
+        <p>Hosted models see every prompt and completion. A privacy policy is the only guarantee, so health, legal, financial and source-code workloads stay off them.</p>
+      </div>
+      <div>
+        <h3>Agents can't sign up</h3>
+        <p>Accounts, API keys and monthly invoices are built for people. Autonomous agents need to pay per call with a budget, from a wallet, with no onboarding.</p>
+      </div>
+      <div>
+        <h3>GPU networks can't prove anything</h3>
+        <p>Decentralized GPU markets have cheap capacity, but a buyer can't tell what code ran or whether anyone looked at the data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">How it works</p>
+      <h2>Four steps on every request.</h2>
+      <p class="lede">Each step is already implemented in the repository and covered by tests.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1 · Verify</span>
+        <h3>Check the enclave</h3>
+        <p>The client sends its own nonce and checks the hardware quote: approved image, no debug mode, and the encryption key bound inside the quote.</p>
+      </div>
+      <div class="step">
+        <span class="n">2 · Seal</span>
+        <h3>Encrypt to that key</h3>
+        <p>The prompt is encrypted on the device (<code>X25519 + AES-256-GCM</code>). Only model and token cap stay readable for billing, and altering them breaks decryption.</p>
+      </div>
+      <div class="step">
+        <span class="n">3 · Pay</span>
+        <h3>Settle in USDC</h3>
+        <p>HTTP 402 quotes the maximum; with the <code>upto</code> scheme only the tokens actually used are settled. Failed requests are never charged.</p>
+      </div>
+      <div class="step">
+        <span class="n">4 · Prove</span>
+        <h3>Anchor a receipt</h3>
+        <p>Each job gets a receipt of hashes. Batches are rolled into a Merkle root stored by the Satoris program on Solana.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Who sees what</p>
+      <h2>The gateway is a router, not a custodian.</h2>
+      <p class="lede">On the sealed path, only the client and the measured enclave image ever handle plaintext.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Party</th><th>Sees the prompt?</th><th>Trusted for</th></tr></thead>
+        <tbody>
+          <tr><td>Client</td><td><span class="pill yes">yes</span></td><td>Itself</td></tr>
+          <tr><td>Gateway</td><td><span class="pill no">no, ciphertext only</span></td><td>Routing, metering, uptime</td></tr>
+          <tr><td>Payment facilitator</td><td><span class="pill no">no</span></td><td>Settling the USDC transfer</td></tr>
+          <tr><td>GPU operator</td><td><span class="pill no">no</span></td><td>Supplying hardware, backed by stake</td></tr>
+          <tr><td>Enclave image</td><td><span class="pill yes">yes, inside the TEE</span></td><td>Pinned by its published measurement</td></tr>
+          <tr><td>Solana</td><td><span class="pill no">no, hashes only</span></td><td>Staking, slashing, receipt ordering</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Why now</p>
+      <h2>Three pieces became real at the same time.</h2>
+    </div>
+    <div class="cols">
+      <div>
+        <h3>Confidential GPUs</h3>
+        <p>NVIDIA Hopper and Blackwell GPUs run in confidential-computing mode alongside Intel TDX and AMD SEV-SNP, with remote attestation from the vendor.</p>
+      </div>
+      <div>
+        <h3>x402 payments</h3>
+        <p>HTTP 402 became an open payment standard with official SDKs, hosted facilitators and Solana support, including usage-based settlement.</p>
+      </div>
+      <div>
+        <h3>Agents that spend</h3>
+        <p>Software agents now buy compute and data on their own. They need a wallet-native API with spend limits, not a signup form.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="built">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">What's built</p>
+      <h2>A working MVP, stated plainly.</h2>
+    </div>
+    <div class="facts" style="margin-bottom: 36px">
+      <div class="fact"><strong>5</strong><span>TypeScript packages</span></div>
+      <div class="fact"><strong>1</strong><span>Anchor program, 9 instructions</span></div>
+      <div class="fact"><strong>23</strong><span>tests, including full paid flow</span></div>
+      <div class="fact"><strong>0</strong><span>plaintext bytes the gateway sees on the sealed path</span></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>OpenAI-compatible gateway</td><td><span class="pill built">built</span></td><td>Chat completions, model catalog, attested routing, zero-payload logging</td></tr>
+          <tr><td>x402 payments on Solana</td><td><span class="pill built">built</span></td><td>Official x402 SDK, <code>exact</code> and <code>upto</code> schemes, verified against the public devnet facilitator</td></tr>
+          <tr><td>Sealed envelopes</td><td><span class="pill built">built</span></td><td>Client-side encryption to the enclave key, tamper-evident billing metadata</td></tr>
+          <tr><td>Client SDK</td><td><span class="pill built">built</span></td><td>Auto-pays 402s, per-request cap and session budget, verifies nodes itself</td></tr>
+          <tr><td>On-chain program</td><td><span class="pill built">built</span></td><td>Node registry and staking, attestation records, receipt roots, slashing</td></tr>
+          <tr><td>Hardware quote verification</td><td><span class="pill next">next</span></td><td>Intel TDX via dcap-qvl and NVIDIA NRAS; today only a dev mode verifies</td></tr>
+          <tr><td>Streaming, web app, provider onboarding</td><td><span class="pill next">next</span></td><td>Scheduled in the roadmap below</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Roadmap</p>
+      <h2>Lean phases, each with a test it must pass.</h2>
+      <p class="lede">About 11 to 14 weeks of build with a small team, plus audit time, to a mainnet beta.</p>
+    </div>
+    <div class="road">
+      <div class="phase"><h3>Phase 0 · Harden</h3><span class="meta">~1 week</span><p>Request limits, persistent receipts, real devnet payments end to end, program tests in CI.</p></div>
+      <div class="phase crit"><h3>Phase 1 · Real attestation</h3><span class="meta">~2–3 weeks · critical path</span><p>Intel TDX and NVIDIA H100 quotes verified in the gateway and in the browser, from a reproducible, measured node image.</p></div>
+      <div class="phase"><h3>Phase 2 · On-chain trust loop</h3><span class="meta">~2 weeks</span><p>Approved images on-chain, nodes routed from the on-chain registry, receipt inclusion proofs any user can check.</p></div>
+      <div class="phase"><h3>Phase 3 · Payments polish</h3><span class="meta">~1–2 weeks</span><p>Per-token settlement by default, sealed streaming, and an MCP tool so agents can call Satoris directly.</p></div>
+      <div class="phase"><h3>Phase 4 · Providers and app</h3><span class="meta">~3–4 weeks</span><p>Self-serve GPU provider onboarding with USDC stake, weekly payouts, and a web app that verifies enclaves in the browser.</p></div>
+      <div class="phase"><h3>Phase 5 · Mainnet beta</h3><span class="meta">~2 weeks plus audit</span><p>Program audit, launch caps, admin pause, multisig authorities, and AMD SEV-SNP support.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Business model</p>
+      <h2>A take rate on private inference.</h2>
+    </div>
+    <div class="cols">
+      <div>
+        <h3>Usage fees</h3>
+        <p>Every request settles in USDC. Satoris keeps the spread between the catalog price and the provider payout, visible in each receipt.</p>
+      </div>
+      <div>
+        <h3>Provider stake</h3>
+        <p>GPU operators stake USDC to receive traffic. Stake backs the network's guarantees without a speculative token.</p>
+      </div>
+      <div>
+        <h3>Private deployments</h3>
+        <p>Teams with regulated data can pin requests to their own attested nodes and keep verifiable receipts for audits.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="callout">
+      <p class="eyebrow">For investors</p>
+      <h2>Building the trust layer for AI that agents and regulated teams can use.</h2>
+      <p>The code is open and runs today on devnet. Funding goes to the critical path: real hardware attestation, a first confidential-GPU provider, and an audited mainnet beta.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/Ops119/satoris-v1/blob/main/docs/ROADMAP.md">Read the roadmap</a>
+        <a class="btn" href="https://github.com/Ops119/satoris-v1">Talk to the team on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>Satoris · private AI inference on Solana</span>
+    <span>Devnet MVP. Do not send sensitive data until hardware attestation ships.</span>
+  </footer>
+</div>
+
+</body>
+</html>
