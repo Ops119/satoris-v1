@@ -67,7 +67,7 @@ a:focus-visible, .btn:focus-visible { outline: 2px solid var(--wax); outline-off
   padding-right: max(20px, env(safe-area-inset-right, 0px));
 }
 section { padding-block: 72px; border-top: 1px solid var(--rule); }
-.masthead + section { margin-top: 56px; }
+.masthead + section { border-top: 0; }
 .eyebrow {
   font: 500 12px/1 var(--f-mono);
   letter-spacing: 0.12em;
@@ -85,12 +85,10 @@ p { margin: 0; max-width: 65ch; }
 .head { display: grid; gap: 14px; margin-bottom: 40px; }
 
 /* Header + hero card */
-.masthead { padding-top: 16px; }
+/* Full-width rectangular band; .wrap inside keeps the side gutters and safe-area insets. */
 .card {
   background: var(--card);
   color: var(--card-fg);
-  border-radius: 18px;
-  padding-inline: clamp(20px, 4vw, 48px);
 }
 .card .mark { color: var(--card-fg); }
 .card .seal { background: var(--card-fg); color: var(--card); }
@@ -129,6 +127,7 @@ p { margin: 0; max-width: 65ch; }
 .status-line b { color: var(--ok); font-weight: 500; }
 
 .trace {
+  margin: 0;
   min-width: 0;
   background: var(--trace-bg);
   color: var(--trace-fg);
@@ -210,8 +209,8 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--rule); color: var
 </head>
 <body>
 
-<div class="wrap masthead">
- <div class="card">
+<div class="masthead card">
+ <div class="wrap">
   <header class="top">
     <a class="mark" href="#top"><span class="seal" aria-hidden="true">S</span>Satoris</a>
     <nav class="nav" aria-label="Sections">
