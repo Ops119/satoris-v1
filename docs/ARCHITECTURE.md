@@ -112,11 +112,6 @@ Quote verification runs off-chain because DCAP/SNP chains are too heavy for
 on-chain compute. The attestation authority should become a multisig or a
 quorum of independent verifiers.
 
-## Suggested next steps
+## Next steps
 
-1. Implement TDX/SNP/NVIDIA `PlatformVerifier`s; ship a reproducible node image and publish its measurement.
-2. Solana client in the gateway: post `anchor_receipts` batches; have an attestation-authority service call `record_attestation`.
-3. Replace the static node list with the on-chain registry (tier and expiry from `Node` accounts).
-4. Persistent receipt store (Postgres) and a receipt-inclusion-proof endpoint.
-5. Streaming: SSE with per-chunk sealing; settle at stream end with `upto`.
-6. Program tests (LiteSVM / bankrun) and an audit before mainnet.
+See [ROADMAP.md](ROADMAP.md) for the phased plan.

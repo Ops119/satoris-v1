@@ -4,8 +4,8 @@ Private AI inference on Solana. Prompts are decrypted only inside attested TEE
 GPU nodes, every request is paid with USDC over [x402](https://www.x402.org/),
 and GPU providers stake into an on-chain registry that can slash them.
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the trust model, how this
-maps to the product outline, and what's still to build.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the trust model and how this
+maps to the product outline, and [docs/ROADMAP.md](docs/ROADMAP.md) for what comes next.
 
 ## Layout
 
@@ -71,4 +71,4 @@ This is MVP step 1 from the outline: an x402-gated inference API over
 TEE nodes, plus the on-chain program for steps 2–3. Before handling real
 data, you need hardware quote verifiers (TDX/SNP/NVIDIA). Until they're in,
 only `dev-insecure` evidence verifies, and it proves nothing. See the
-"Suggested next steps" section in the architecture doc.
+[docs/ROADMAP.md](docs/ROADMAP.md) for the phased plan.
