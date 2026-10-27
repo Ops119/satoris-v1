@@ -1,0 +1,32 @@
+{
+  "name": "@satoris/gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenAI-compatible inference gateway with x402 (Solana USDC) payments and attested routing",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "satoris-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx --conditions=satoris-source src/main.ts",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@satoris/attestation": "workspace:*",
+    "@satoris/sealed": "workspace:*",
+    "@x402/core": "~2.28.0",
+    "@x402/hono": "~2.28.0",
+    "@x402/svm": "~2.28.0",
+    "hono": "^4.13.0"
+  },
+  "devDependencies": {
+    "@satoris/node-agent": "workspace:*"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@satoris/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Client SDK: pays with x402 on Solana, verifies node attestation, seals prompts end to end",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "satoris-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@satoris/attestation": "workspace:*",
+    "@satoris/sealed": "workspace:*",
+    "@x402/core": "~2.28.0",
+    "@x402/fetch": "~2.28.0",
+    "@x402/svm": "~2.28.0"
+  }
+}

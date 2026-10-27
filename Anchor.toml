@@ -1,0 +1,13 @@
+[toolchain]
+package_manager = "pnpm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+satoris = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"

@@ -1,0 +1,27 @@
+[package]
+name = "satoris"
+version = "0.1.0"
+description = "Satoris on-chain programs: node registry, staking, attestation records, receipt anchoring, slashing"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "satoris"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+custom-heap = []
+custom-panic = []
+anchor-debug = []
+
+[dependencies]
+anchor-lang = "1.2.1"
+anchor-spl = "1.2.1"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

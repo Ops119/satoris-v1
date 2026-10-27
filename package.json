@@ -1,0 +1,27 @@
+{
+  "name": "satoris",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "dev:gateway": "pnpm --filter @satoris/gateway dev",
+    "dev:node": "pnpm --filter @satoris/node-agent dev"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
